@@ -64,7 +64,7 @@ export default function MBTAMap() {
   }, [stations]);
 
   return (
-    <div>
+    <div id="app-root">
       <h2>MBTA Subway Map</h2>
       <p>Use arrow keys to navigate stations.</p>
       {stations.length > 0 && (

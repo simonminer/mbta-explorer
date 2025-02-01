@@ -1,81 +1,71 @@
-import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import L from "leaflet";
-import axios from "axios";
-import "leaflet/dist/leaflet.css";
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
 
-// Custom MBTA marker icon
-const mbtaIcon = new L.Icon({
-  iconUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/MBTA.svg/1024px-MBTA.svg.png",
-  iconSize: [20, 20],
-});
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
 
-// MBTA API URL (fetch all subway stations)
-const MBTA_API_URL =
-  "https://api-v3.mbta.com/stops?filter[route]=Red,Blue,Orange,Green-B,Green-C,Green-D,Green-E&include=route";
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 
-export default function MBTAMap() {
-  const [stations, setStations] = useState([]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  text-align: center;
+}
 
-  // Fetch station data from MBTA API
-  useEffect(() => {
-    axios
-      .get(MBTA_API_URL)
-      .then((response) => {
-        const fetchedStations = response.data.data.map((station) => ({
-          id: station.id,
-          name: station.attributes.name,
-          lat: station.attributes.latitude,
-          lng: station.attributes.longitude,
-        }));
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
 
-        setStations(fetchedStations);
-      })
-      .catch((error) => console.error("Error fetching MBTA data:", error));
-  }, []);
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  justify-content: center;
+  min-width: 320px;
+  min-height: 100 vh;
+}
 
-  // Handle keyboard navigation
-  const handleKeyDown = (e) => {
-    if (stations.length === 0) return;
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
 
-    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-      setSelectedIndex((prev) => (prev + 1) % stations.length);
-    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-      setSelectedIndex((prev) => (prev - 1 + stations.length) % stations.length);
-    }
-  };
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [stations]);
-
-  return (
-    <div>
-      <h2>MBTA Subway Map</h2>
-      <p>Use arrow keys to navigate stations.</p>
-      {stations.length > 0 && (
-        <p>
-          <strong>Current Station:</strong> {stations[selectedIndex]?.name}
-        </p>
-      )}
-
-      <MapContainer center={[42.3601, -71.0589]} zoom={13} style={{ height: "500px", width: "100%" }}>
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
-        {stations.map((station, index) => (
-          <Marker
-            key={station.id}
-            position={[station.lat, station.lng]}
-            icon={mbtaIcon}
-          >
-            <Popup>
-              {station.name} {index === selectedIndex && "(Selected)"}
-            </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
-    </div>
-  );
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
 }

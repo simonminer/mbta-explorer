@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, CircleMarker } from "react-leaflet";
 import L from "leaflet";
 import axios from "axios";
 import "leaflet/dist/leaflet.css";
 
-// Custom MBTA icon
-const mbtaIcon = new L.Icon({
+// Default MBTA station icon
+const defaultIcon = new L.Icon({
   iconUrl: "https://upload.wikimedia.org/wikipedia/commons/6/64/MBTA.svg",
   iconSize: [30, 30],
   iconAnchor: [15, 15],
   popupAnchor: [0, -10],
+});
+
+// Highlighted (selected) station icon
+const selectedIcon = new L.Icon({
+  iconUrl: "https://upload.wikimedia.org/wikipedia/commons/6/64/MBTA.svg",
+  iconSize: [35, 35], // Slightly larger for emphasis
+  iconAnchor: [17, 17],
+  popupAnchor: [0, -12],
 });
 
 // MBTA API URL
@@ -25,8 +33,6 @@ export default function MBTAMap() {
     axios
       .get(MBTA_API_URL)
       .then((response) => {
-        // console.log("MBTA API Response:", response.data); // Debugging
-
         const fetchedStations = response.data.data
           .map((station) => ({
             id: station.id,
@@ -35,8 +41,6 @@ export default function MBTAMap() {
             lng: station.attributes.longitude,
           }))
           .filter((station) => station.lat !== null && station.lng !== null); // Ensure valid coordinates
-
-        // console.log("Processed Stations:", fetchedStations); // Debugging
 
         setStations(fetchedStations);
       })
@@ -76,13 +80,24 @@ export default function MBTAMap() {
           <Marker
             key={station.id}
             position={[station.lat, station.lng]}
-            icon={mbtaIcon}
+            icon={index === selectedIndex ? selectedIcon : defaultIcon} // Highlight selected station
           >
             <Popup>
               {station.name} {index === selectedIndex && "(Selected)"}
             </Popup>
           </Marker>
         ))}
+
+        {/* Highlight the selected station with a circle */}
+        {stations.length > 0 && (
+          <CircleMarker
+            center={[stations[selectedIndex].lat, stations[selectedIndex].lng]}
+            radius={20}
+            color="red"
+            fillColor="red"
+            fillOpacity={0.8}
+          />
+        )}
       </MapContainer>
     </div>
   );

@@ -66,7 +66,7 @@ export default function MBTAMap() {
   return (
     <div>
       <h2>MBTA Subway Map</h2>
-      <p>Use arrow keys to navigate stations.</p>
+      <p>Use arrow keys to navigate stations or click on a station icon to select it.</p>
       {stations.length > 0 && (
         <p>
           <strong>Current Station:</strong> {stations[selectedIndex]?.name}
@@ -81,6 +81,9 @@ export default function MBTAMap() {
             key={station.id}
             position={[station.lat, station.lng]}
             icon={index === selectedIndex ? selectedIcon : defaultIcon} // Highlight selected station
+            eventHandlers={{
+              click: () => setSelectedIndex(index),
+            }}
           >
             <Popup>
               {station.name} {index === selectedIndex && "(Selected)"}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, CircleMarker } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, CircleMarker, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import axios from "axios";
 import "leaflet/dist/leaflet.css";
@@ -64,7 +64,7 @@ export default function MBTAMap() {
   }, [stations]);
 
   return (
-    <div id="app-root">
+    <div>
       <h2>MBTA Subway Map</h2>
       <p>Use arrow keys to navigate stations.</p>
       {stations.length > 0 && (
@@ -88,15 +88,20 @@ export default function MBTAMap() {
           </Marker>
         ))}
 
-        {/* Highlight the selected station with a circle */}
+        {/* Highlight the selected station with a circle and show name */}
         {stations.length > 0 && (
           <CircleMarker
             center={[stations[selectedIndex].lat, stations[selectedIndex].lng]}
-            radius={20}
+            radius={20} // Increased size
             color="red"
-            fillColor="red"
-            fillOpacity={0.8}
-          />
+            fillColor="yellow"
+            fillOpacity={0.7}
+            weight={4} // Thicker border
+          >
+            <Tooltip direction="top" offset={[0, -10]} permanent>
+              {stations[selectedIndex].name}
+            </Tooltip>
+          </CircleMarker>
         )}
       </MapContainer>
     </div>

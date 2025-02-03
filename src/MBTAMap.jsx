@@ -73,7 +73,7 @@ export default function MBTAMap() {
         </p>
       )}
 
-      <MapContainer center={[42.3601, -71.0589]} zoom={13} style={{ height: "500px", width: "100%" }}>
+      <MapContainer center={[42.3601, -71.0589]} zoom={13} style={{ height: "500px", width: "90vw" }}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
         {stations.map((station, index) => (

@@ -4,53 +4,74 @@ import L from "leaflet";
 import axios from "axios";
 import "leaflet/dist/leaflet.css";
 
-// Default MBTA station icon
-const defaultIcon = new L.Icon({
-  iconUrl: "https://upload.wikimedia.org/wikipedia/commons/6/64/MBTA.svg",
-  iconSize: [30, 30],
-  iconAnchor: [15, 15],
-  popupAnchor: [0, -10],
-});
+// MBTA line colors
+const lineColors = {
+  Red: "#FF0000",
+  Blue: "#0000FF",
+  Orange: "#FFA500",
+  "Green-B": "#008000",
+  "Green-C": "#008000",
+  "Green-D": "#008000",
+  "Green-E": "#008000",
+};
 
-// Highlighted (selected) station icon
-const selectedIcon = new L.Icon({
-  iconUrl: "https://upload.wikimedia.org/wikipedia/commons/6/64/MBTA.svg",
-  iconSize: [35, 35], // Slightly larger for emphasis
-  iconAnchor: [17, 17],
-  popupAnchor: [0, -12],
-});
+const LINES = ["Red", "Blue", "Orange", "Green-B", "Green-C", "Green-D", "Green-E"];
 
-// MBTA API URL
-const MBTA_API_URL =
-  "https://api-v3.mbta.com/stops?filter[route]=Red,Blue,Orange,Green-B,Green-C,Green-D,Green-E&include=route";
+const getStationIcon = (color) =>
+  new L.Icon({
+    iconUrl: "https://upload.wikimedia.org/wikipedia/commons/6/64/MBTA.svg",
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -10],
+  });
 
 export default function MBTAMap() {
   const [stations, setStations] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [currentColor, setCurrentColor] = useState("gray");
 
-  // Fetch MBTA stations
   useEffect(() => {
-    axios
-      .get(MBTA_API_URL)
-      .then((response) => {
-        const fetchedStations = response.data.data
-          .map((station) => ({
-            id: station.id,
-            name: station.attributes.name,
-            lat: station.attributes.latitude,
-            lng: station.attributes.longitude,
-          }))
-          .filter((station) => station.lat !== null && station.lng !== null); // Ensure valid coordinates
+    const fetchStations = async () => {
+      try {
+        let allStations = [];
+        for (const line of LINES) {
+          const response = await axios.get(
+            `https://api-v3.mbta.com/stops?filter[route]=${line}&include=route`
+          );
+          const lineStations = response.data.data
+            .map((station) => {
+              const routeName = response.data.included?.find((r) => r.id === line)?.attributes?.long_name || line;
+              return {
+                id: station.id,
+                name: station.attributes.name,
+                lat: station.attributes.latitude,
+                lng: station.attributes.longitude,
+                line,
+                routeName,
+                color: lineColors[line] || "gray",
+              };
+            })
+            .filter((station) => station.lat !== null && station.lng !== null);
+          allStations = [...allStations, ...lineStations];
+        }
+        setStations(allStations);
+      } catch (error) {
+        console.error("Error fetching MBTA data:", error);
+      }
+    };
 
-        setStations(fetchedStations);
-      })
-      .catch((error) => console.error("Error fetching MBTA data:", error));
+    fetchStations();
   }, []);
 
-  // Handle keyboard navigation
+  useEffect(() => {
+    if (stations.length > 0) {
+      console.info("station color = " + stations[selectedIndex].color)
+      setCurrentColor(stations[selectedIndex].color);
+    }
+  }, [selectedIndex, stations]);
+
   const handleKeyDown = (e) => {
     if (stations.length === 0) return;
-
     if (e.key === "ArrowRight" || e.key === "ArrowDown") {
       setSelectedIndex((prev) => (prev + 1) % stations.length);
     } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
@@ -69,7 +90,7 @@ export default function MBTAMap() {
       <p>Use arrow keys to navigate stations or click on a station icon to select it.</p>
       {stations.length > 0 && (
         <p>
-          <strong>Current Station:</strong> {stations[selectedIndex]?.name}
+          <strong>Current Station:</strong> {stations[selectedIndex]?.name} ({stations[selectedIndex]?.routeName} Line)
         </p>
       )}
 
@@ -80,25 +101,24 @@ export default function MBTAMap() {
           <Marker
             key={station.id}
             position={[station.lat, station.lng]}
-            icon={index === selectedIndex ? selectedIcon : defaultIcon} // Highlight selected station
+            icon={getStationIcon(station.color)}
             eventHandlers={{
               click: () => setSelectedIndex(index),
             }}
           />
         ))}
 
-        {/* Highlight the selected station with a circle and show name */}
         {stations.length > 0 && (
           <CircleMarker
             center={[stations[selectedIndex].lat, stations[selectedIndex].lng]}
-            radius={20} // Increased size
-            color="red"
-            fillColor="yellow"
+            radius={20}
+            color={currentColor}
+            fillColor={currentColor}
             fillOpacity={0.7}
-            weight={4} // Thicker border
+            weight={4}
           >
             <Tooltip direction="top" offset={[0, -10]} permanent>
-              {stations[selectedIndex].name}
+              {stations[selectedIndex].name} ({stations[selectedIndex].routeName} Line)
             </Tooltip>
           </CircleMarker>
         )}

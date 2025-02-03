@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, CircleMarker, Tooltip } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, CircleMarker, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import axios from "axios";
 import "leaflet/dist/leaflet.css";
@@ -84,11 +84,7 @@ export default function MBTAMap() {
             eventHandlers={{
               click: () => setSelectedIndex(index),
             }}
-          >
-            <Popup>
-              {station.name} {index === selectedIndex && "(Selected)"}
-            </Popup>
-          </Marker>
+          />
         ))}
 
         {/* Highlight the selected station with a circle and show name */}

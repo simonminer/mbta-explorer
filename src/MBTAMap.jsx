@@ -42,7 +42,6 @@ export default function MBTAMap() {
   const [stations, setStations] = useState([]);
   const [lines, setLines] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [currentColor, setCurrentColor] = useState("gray");
 
   useEffect(() => {
     const fetchStations = async () => {
@@ -87,12 +86,6 @@ export default function MBTAMap() {
 
     fetchStations();
   }, []);
-
-  useEffect(() => {
-    if (stations.length > 0 && stations[selectedIndex]) {
-      setCurrentColor(stations[selectedIndex].color);
-    }
-  }, [selectedIndex, stations]);
 
   const handleKeyDown = (e) => {
     if (stations.length === 0) return;
@@ -144,10 +137,10 @@ export default function MBTAMap() {
           <CircleMarker
             center={[stations[selectedIndex].lat, stations[selectedIndex].lng]}
             radius={20}
-            color={currentColor}
-            fillColor={currentColor}
-            fillOpacity={0.7}
-            weight={4}
+            color="#000000"
+            fillColor="#FFD700"
+            fillOpacity={0.9}
+            weight={2}
           >
             <Tooltip direction="top" offset={[0, -10]} permanent>
               {stations[selectedIndex].name} ({stations[selectedIndex].routeName} Line)

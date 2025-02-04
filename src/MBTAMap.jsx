@@ -89,7 +89,7 @@ export default function MBTAMap() {
   }, []);
 
   useEffect(() => {
-    if (stations.length > 0) {
+    if (stations.length > 0 && stations[selectedIndex]) {
       setCurrentColor(stations[selectedIndex].color);
     }
   }, [selectedIndex, stations]);
@@ -112,16 +112,18 @@ export default function MBTAMap() {
     <div>
       <h2>MBTA Subway Map</h2>
       <p>Use arrow keys to navigate stations or click on a station icon to select it.</p>
-      {stations.length > 0 && (
+      {stations[selectedIndex] && (
         <p>
-          <strong>Current Station:</strong> {stations[selectedIndex]?.name} ({stations[selectedIndex]?.routeName} Line)
+          <strong>Current Station:</strong> {stations[selectedIndex].name} ({stations[selectedIndex].routeName} Line)
         </p>
       )}
 
       <MapContainer center={[42.3601, -71.0589]} zoom={13} style={{ height: "500px", width: "90vw" }}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        <MapMover position={[stations[selectedIndex]?.lat, stations[selectedIndex]?.lng]} />
+        {stations[selectedIndex] && (
+          <MapMover position={[stations[selectedIndex].lat, stations[selectedIndex].lng]} />
+        )}
 
         {lines.map((line, index) => (
           <Polyline key={index} positions={line.positions} color={line.color} weight={5} />
@@ -138,7 +140,7 @@ export default function MBTAMap() {
           />
         ))}
 
-        {stations.length > 0 && (
+        {stations[selectedIndex] && (
           <CircleMarker
             center={[stations[selectedIndex].lat, stations[selectedIndex].lng]}
             radius={20}

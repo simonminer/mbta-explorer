@@ -25,7 +25,7 @@ const getStationIcon = () =>
     popupAnchor: [0, -10],
   });
 
-function MapMover({ position }) {
+function MapMover({ position, onMoveEnd }) {
   const map = useMap();
   useEffect(() => {
     if (position) {
@@ -33,8 +33,9 @@ function MapMover({ position }) {
         animate: true,
         duration: 1,
       });
+      map.once("moveend", () => setTimeout(onMoveEnd, 200)); // Ensure circleMarker moves after animation completes
     }
-  }, [position, map]);
+  }, [position, map, onMoveEnd]);
   return null;
 }
 
@@ -106,11 +107,11 @@ export default function MBTAMap() {
     fetchStations();
   }, []);
 
-  useEffect(() => {
+  const updateCircleMarker = () => {
     if (stations[selectedIndex]) {
       setCurrentCircleMarker(circleMarkers[stations[selectedIndex].line]?.(stations[selectedIndex]));
     }
-  }, [selectedIndex, stations, circleMarkers]);
+  };
 
   const handleKeyDown = (e) => {
     if (stations.length === 0) return;
@@ -140,7 +141,10 @@ export default function MBTAMap() {
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
         {stations[selectedIndex] && (
-          <MapMover position={[stations[selectedIndex].lat, stations[selectedIndex].lng]} />
+          <MapMover
+            position={[stations[selectedIndex].lat, stations[selectedIndex].lng]}
+            onMoveEnd={updateCircleMarker}
+          />
         )}
 
         {lines.map((line, index) => (

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, CircleMarker, Tooltip, Polyline } from "react-leaflet";
+import React, { useEffect, useState, useRef } from "react";
+import { MapContainer, TileLayer, Marker, CircleMarker, Tooltip, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
 import axios from "axios";
 import "leaflet/dist/leaflet.css";
@@ -24,6 +24,19 @@ const getStationIcon = (color) =>
     iconAnchor: [15, 15],
     popupAnchor: [0, -10],
   });
+
+function MapMover({ position }) {
+  const map = useMap();
+  useEffect(() => {
+    if (position) {
+      map.flyTo(position, map.getZoom(), {
+        animate: true,
+        duration: 1,
+      });
+    }
+  }, [position, map]);
+  return null;
+}
 
 export default function MBTAMap() {
   const [stations, setStations] = useState([]);
@@ -107,6 +120,8 @@ export default function MBTAMap() {
 
       <MapContainer center={[42.3601, -71.0589]} zoom={13} style={{ height: "500px", width: "90vw" }}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+        <MapMover position={[stations[selectedIndex]?.lat, stations[selectedIndex]?.lng]} />
 
         {lines.map((line, index) => (
           <Polyline key={index} positions={line.positions} color={line.color} weight={5} />

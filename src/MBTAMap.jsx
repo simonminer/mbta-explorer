@@ -31,9 +31,9 @@ function MapMover({ position, onMoveEnd }) {
     if (position) {
       map.flyTo(position, map.getZoom(), {
         animate: true,
-        duration: 1,
+        duration: 0.25,
       });
-      map.once("moveend", () => setTimeout(onMoveEnd, 200)); // Ensure circleMarker moves after animation completes
+      map.once("moveend", onMoveEnd); // Ensure circleMarker moves after animation completes
     }
   }, [position, map, onMoveEnd]);
   return null;

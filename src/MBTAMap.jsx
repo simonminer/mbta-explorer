@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, CircleMarker, Tooltip, Polyline, useMa
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import MapMover from "./components/MapMover";
+import StationMarker from "./components/StationMarker";
 import { fetchStations } from "./services/mbtaService";
 
 // MBTA line colors
@@ -87,16 +88,13 @@ export default function MBTAMap() {
           <Polyline key={index} positions={line.positions} color={line.color} weight={5} />
         ))}
 
-        {stations.map((station, index) => (
-          <Marker
-            key={station.id}
-            position={[station.lat, station.lng]}
-            icon={getStationIcon()}
-            eventHandlers={{
-              click: () => setSelectedIndex(index),
-            }}
-          />
-        ))}
+      {stations.map((station, index) => (
+        <StationMarker 
+          key={station.id} 
+          station={station} 
+          onClick={() => setSelectedIndex(index)} 
+        />
+      ))}
 
         {currentCircleMarker}
       </MapContainer>

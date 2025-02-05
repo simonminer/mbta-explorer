@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, CircleMarker, Tooltip, Polyline, useMap } from "react-leaflet";
+import { MapContainer, TileLayer } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import MapMover from "./components/MapMover";
@@ -20,14 +20,6 @@ const lineColors = {
 };
 
 const LINES = ["Red", "Blue", "Orange", "Green-B", "Green-C", "Green-D", "Green-E"];
-
-const getStationIcon = () =>
-  new L.Icon({
-    iconUrl: "https://upload.wikimedia.org/wikipedia/commons/6/64/MBTA.svg",
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
-    popupAnchor: [0, -10],
-  });
 
 export default function MBTAMap() {
   const [stations, setStations] = useState([]);

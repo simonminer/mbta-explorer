@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, CircleMarker, Tooltip, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
-import axios from "axios";
 import "leaflet/dist/leaflet.css";
 import MapMover from "./components/MapMover";
+import { fetchStations } from "./services/mbtaService";
 
 // MBTA line colors
 const lineColors = {
@@ -26,7 +26,6 @@ const getStationIcon = () =>
     popupAnchor: [0, -10],
   });
 
-
 export default function MBTAMap() {
   const [stations, setStations] = useState([]);
   const [lines, setLines] = useState([]);
@@ -35,65 +34,14 @@ export default function MBTAMap() {
   const [currentCircleMarker, setCurrentCircleMarker] = useState(null);
 
   useEffect(() => {
-    const fetchStations = async () => {
-      try {
-        let allStations = [];
-        let allLines = [];
-        let markers = {};
-
-        for (const line of LINES) {
-          const response = await axios.get(
-            `https://api-v3.mbta.com/stops?filter[route]=${line}&include=route`
-          );
-          const lineStations = response.data.data
-            .map((station) => {
-              const routeName = response.data.included?.find((r) => r.id === line)?.attributes?.long_name || line;
-              return {
-                id: station.id,
-                name: station.attributes.name,
-                lat: station.attributes.latitude,
-                lng: station.attributes.longitude,
-                line,
-                routeName,
-                color: lineColors[line] || "gray",
-              };
-            })
-            .filter((station) => station.lat !== null && station.lng !== null);
-          allStations = [...allStations, ...lineStations];
-
-          for (let i = 0; i < lineStations.length - 1; i++) {
-            allLines.push({
-              positions: [
-                [lineStations[i].lat, lineStations[i].lng],
-                [lineStations[i + 1].lat, lineStations[i + 1].lng],
-              ],
-              color: lineColors[line] || "gray",
-            });
-          }
-
-          markers[line] = (station) => (
-            <CircleMarker
-              key={station.id}
-              center={[station.lat, station.lng]}
-              radius={20}
-              color="#000000"
-              fillColor={lineColors[station.line] || "gray"}
-              fillOpacity={0.9}
-              weight={2}
-            />
-          );
-        }
-
-        setStations(allStations);
-        setLines(allLines);
-        setCircleMarkers(markers);
-      } catch (error) {
-        console.error("Error fetching MBTA data:", error);
-      }
+    const getData = async () => {
+      const { stations, lines, markers } = await fetchStations(lineColors);
+      setStations(stations);
+      setLines(lines);
+      setCircleMarkers(markers);
     };
-
-    fetchStations();
-  }, []);
+    getData();
+  }, []);  
 
   const updateCircleMarker = () => {
     if (stations[selectedIndex]) {

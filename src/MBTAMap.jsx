@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import MapMover from "./components/MapMover";
 import StationMarker from "./components/StationMarker";
 import StationCircleMarker from "./components/StationCircleMarker";
+import TransitLines from "./components/TransitLines";
 import { fetchStations } from "./services/mbtaService";
 
 // MBTA line colors
@@ -85,19 +86,17 @@ export default function MBTAMap() {
           />
         )}
 
-        {lines.map((line, index) => (
-          <Polyline key={index} positions={line.positions} color={line.color} weight={5} />
-        ))}
+        <TransitLines lines={lines} />
 
-      {stations.map((station, index) => (
-        <StationMarker 
-          key={station.id} 
-          station={station} 
-          onClick={() => setSelectedIndex(index)} 
-        />
-      ))}
+        {stations.map((station, index) => (
+         <StationMarker 
+            key={station.id} 
+            station={station} 
+            onClick={() => setSelectedIndex(index)} 
+          />
+        ))}
       
-      <StationCircleMarker station={stations[selectedIndex]} isVisible={true} />
+        <StationCircleMarker station={stations[selectedIndex]} isVisible={true} />
 
       </MapContainer>
     </div>

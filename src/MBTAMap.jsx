@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, CircleMarker, Tooltip, Polyline, useMa
 import L from "leaflet";
 import axios from "axios";
 import "leaflet/dist/leaflet.css";
+import MapMover from "./components/MapMover";
 
 // MBTA line colors
 const lineColors = {
@@ -25,19 +26,6 @@ const getStationIcon = () =>
     popupAnchor: [0, -10],
   });
 
-function MapMover({ position, onMoveEnd }) {
-  const map = useMap();
-  useEffect(() => {
-    if (position) {
-      map.flyTo(position, map.getZoom(), {
-        animate: true,
-        duration: 0.25,
-      });
-      map.once("moveend", onMoveEnd); // Ensure circleMarker moves after animation completes
-    }
-  }, [position, map, onMoveEnd]);
-  return null;
-}
 
 export default function MBTAMap() {
   const [stations, setStations] = useState([]);

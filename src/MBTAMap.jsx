@@ -8,17 +8,6 @@ import StationCircleMarker from "./components/StationCircleMarker";
 import TransitLines from "./components/TransitLines";
 import { fetchStations } from "./services/mbtaService";
 
-// MBTA line colors
-const lineColors = {
-  Red: "#FF0000",
-  Blue: "#0000FF",
-  Orange: "#FFA500",
-  "Green-B": "#008000",
-  "Green-C": "#008000",
-  "Green-D": "#008000",
-  "Green-E": "#008000",
-};
-
 const LINES = ["Red", "Blue", "Orange", "Green-B", "Green-C", "Green-D", "Green-E"];
 
 export default function MBTAMap() {
@@ -30,7 +19,7 @@ export default function MBTAMap() {
 
   useEffect(() => {
     const getData = async () => {
-      const { stations, lines, markers } = await fetchStations(lineColors);
+      const { stations, lines, markers } = await fetchStations();
       setStations(stations);
       setLines(lines);
       setCircleMarkers(markers);

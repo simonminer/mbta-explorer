@@ -1,13 +1,22 @@
 import axios from "axios";
 
-const LINES = ["Red", "Blue", "Orange", "Green-B", "Green-C", "Green-D", "Green-E"];
+// MBTA line colors
+const lineColors = {
+  Red: "#FF0000",
+  Blue: "#0000FF",
+  Orange: "#FFA500",
+  "Green-B": "#008000",
+  "Green-C": "#008000",
+  "Green-D": "#008000",
+  "Green-E": "#008000",
+};
 
-export const fetchStations = async (lineColors) => {
+export const fetchStations = async () => {
   let allStations = [];
   let allLines = [];
   let markers = {};
 
-  for (const line of LINES) {
+  for (const line of Object.keys(lineColors)) {
     try {
       const response = await axios.get(`https://api-v3.mbta.com/stops?filter[route]=${line}&include=route`);
       const lineStations = response.data.data

@@ -8,8 +8,6 @@ import StationCircleMarker from "./components/StationCircleMarker";
 import TransitLines from "./components/TransitLines";
 import { fetchStations } from "./services/mbtaService";
 
-const LINES = ["Red", "Blue", "Orange", "Green-B", "Green-C", "Green-D", "Green-E"];
-
 export default function MBTAMap() {
   const [stations, setStations] = useState([]);
   const [lines, setLines] = useState([]);

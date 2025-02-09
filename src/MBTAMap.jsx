@@ -75,7 +75,7 @@ export default function MBTAMap() {
           />
         ))}
       
-        <StationCircleMarker station={stations[selectedIndex]} isVisible={true} />
+        {currentCircleMarker}
 
       </MapContainer>
     </div>

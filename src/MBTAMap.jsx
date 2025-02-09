@@ -4,7 +4,6 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import MapMover from "./components/MapMover";
 import StationMarker from "./components/StationMarker";
-import StationCircleMarker from "./components/StationCircleMarker";
 import TransitLines from "./components/TransitLines";
 import { fetchStations } from "./services/mbtaService";
 

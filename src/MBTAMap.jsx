@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
-import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import MapMover from "./components/MapMover";
 import StationMarker from "./components/StationMarker";
@@ -26,10 +25,14 @@ export default function MBTAMap() {
 
   const updateCircleMarker = () => {
     if (stations[selectedIndex]) {
-      setCurrentCircleMarker(circleMarkers[stations[selectedIndex].line]?.(stations[selectedIndex]));
+      const newMarker = circleMarkers[stations[selectedIndex].line]?.(stations[selectedIndex]);
+      // Serialize markers so they can be compared as strings instead of as shallow objects.
+      if (JSON.stringify(newMarker) !== JSON.stringify(currentCircleMarker)) {  
+        setCurrentCircleMarker(circleMarkers[stations[selectedIndex].line]?.(stations[selectedIndex]));
+      }
     }
   };
-
+ 
   const handleKeyDown = (e) => {
     if (stations.length === 0) return;
     if (e.key === "ArrowRight" || e.key === "ArrowDown") {

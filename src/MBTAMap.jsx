@@ -3,6 +3,7 @@ import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import MapMover from "./components/MapMover";
 import StationMarker from "./components/StationMarker";
+import CurrentStationMarker from "./components/CurrentStationMarker";
 import TransitLines from "./components/TransitLines";
 import { fetchStations } from "./services/mbtaService";
 
@@ -77,8 +78,11 @@ export default function MBTAMap() {
           />
         ))}
       
-        {currentCircleMarker}
-
+        {stations[selectedIndex] && (
+          <CurrentStationMarker
+            station={stations[selectedIndex]}
+          />            
+        )}
       </MapContainer>
     </div>
   );

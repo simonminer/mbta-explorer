@@ -43,8 +43,8 @@ export default function MBTAMap() {
 
   return (
     <div>
-      <h2>MBTA Subway Map</h2>
-      <p>Use arrow keys to navigate stations or click on a station icon to select it.</p>
+      <h2>MBTA Explorer</h2>
+      <p>Use arrow keys to navigate stations or click on a station icon to select it. Press Enter to see station details.</p>
       {stations[selectedIndex] && (
         <p>
           <strong>Current Station:</strong> {stations[selectedIndex].name} ({stations[selectedIndex].routeName} Line)

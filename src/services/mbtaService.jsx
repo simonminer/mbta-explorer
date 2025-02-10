@@ -45,22 +45,10 @@ export const fetchStations = async () => {
           color: lineColors[line] || "gray",
         });
       }
-
-      markers[line] = (station) => (
-        <CircleMarker
-          key={station.id}
-          center={[station.lat, station.lng]}
-          radius={20}
-          color="#000000"
-          fillColor={lineColors[station.line] || "gray"}
-          fillOpacity={0.9}
-          weight={2}
-        />
-      );
     } catch (error) {
       console.error(`Error fetching MBTA data for ${line}:`, error);
     }
   }
 
-  return { stations: allStations, lines: allLines, markers };
+  return { stations: allStations, lines: allLines };
 };

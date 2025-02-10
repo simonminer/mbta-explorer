@@ -11,29 +11,17 @@ export default function MBTAMap() {
   const [stations, setStations] = useState([]);
   const [lines, setLines] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [circleMarkers, setCircleMarkers] = useState({});
   const [currentCircleMarker, setCurrentCircleMarker] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
-      const { stations, lines, markers } = await fetchStations();
+      const { stations, lines } = await fetchStations();
       setStations(stations);
       setLines(lines);
-      setCircleMarkers(markers);
     };
     getData();
   }, []);  
-
-  const updateCircleMarker = () => {
-    if (stations[selectedIndex]) {
-      const newMarker = circleMarkers[stations[selectedIndex].line]?.(stations[selectedIndex]);
-      // Serialize markers so they can be compared as strings instead of as shallow objects.
-      if (JSON.stringify(newMarker) !== JSON.stringify(currentCircleMarker)) {  
-        setCurrentCircleMarker(circleMarkers[stations[selectedIndex].line]?.(stations[selectedIndex]));
-      }
-    }
-  };
  
   const handleKeyDown = (e) => {
     if (stations.length === 0) return;
@@ -69,7 +57,6 @@ export default function MBTAMap() {
         {stations[selectedIndex] && (
           <MapMover
             position={[stations[selectedIndex].lat, stations[selectedIndex].lng]}
-            onMoveEnd={updateCircleMarker}
           />
         )}
 

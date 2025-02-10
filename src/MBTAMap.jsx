@@ -13,6 +13,7 @@ export default function MBTAMap() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [circleMarkers, setCircleMarkers] = useState({});
   const [currentCircleMarker, setCurrentCircleMarker] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
@@ -38,8 +39,12 @@ export default function MBTAMap() {
     if (stations.length === 0) return;
     if (e.key === "ArrowRight" || e.key === "ArrowDown") {
       setSelectedIndex((prev) => (prev + 1) % stations.length);
+      setShowDetails(false);
     } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
       setSelectedIndex((prev) => (prev - 1 + stations.length) % stations.length);
+      setShowDetails(false);
+    } else if (e.key === "Enter") {
+      setShowDetails((prev) => !prev);
     }
   };
 
@@ -81,6 +86,7 @@ export default function MBTAMap() {
         {stations[selectedIndex] && (
           <CurrentStationMarker
             station={stations[selectedIndex]}
+            showDetails={showDetails}
           />            
         )}
       </MapContainer>

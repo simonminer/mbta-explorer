@@ -26,6 +26,8 @@ export const fetchStations = async () => {
           name: station.attributes.name,
           lat: station.attributes.latitude,
           lng: station.attributes.longitude,
+          address: station.attributes.address || "No address found",
+          wheelchair: station.attributes.wheelchair_boarding === 1 ? "Yes" : "No",
           line,
           routeName: response.data.included?.find((r) => r.id === line)?.attributes?.long_name || line,
           color: lineColors[line] || "gray",

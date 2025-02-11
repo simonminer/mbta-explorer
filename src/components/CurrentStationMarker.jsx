@@ -18,6 +18,7 @@ export default function StationMarker({ station, showDetails }) {
         {showDetails && (
           <div>
             <div class="station-address">{station.address}</div>
+            <div class="station-lines">Lines: {station.lines.join(', ')}</div>
             <div class="station-accessible">Wheelchair Accessible: {station.wheelchair}</div>
           </div>
         )}

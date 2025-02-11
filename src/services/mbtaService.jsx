@@ -15,23 +15,31 @@ const lineColors = {
 export const fetchStations = async () => {
   let allStations = [];
   let allLines = [];
-  let markers = {};
+  let stationLineMap = new Map(); // Tracks station IDs and their corresponding lines
 
   for (const line of Object.keys(lineColors)) {
     try {
-      const response = await axios.get(`https://api-v3.mbta.com/stops?filter[route]=${line}&include=route`);
+      const response = await axios.get(
+        `https://api-v3.mbta.com/stops?filter[route]=${line}&include=route`
+      );
       const lineStations = response.data.data
-        .map((station) => ({
-          id: station.id,
-          name: station.attributes.name,
-          lat: station.attributes.latitude,
-          lng: station.attributes.longitude,
-          address: station.attributes.address || "No address found",
-          wheelchair: station.attributes.wheelchair_boarding === 1 ? "Yes" : "No",
-          line,
-          routeName: response.data.included?.find((r) => r.id === line)?.attributes?.long_name || line,
-          color: lineColors[line] || "gray",
-        }))
+        .map((station) => {
+          if (!stationLineMap.has(station.id)) {
+            stationLineMap.set(station.id, new Set());
+          }
+          stationLineMap.get(station.id).add(line);
+          
+          return {
+            id: station.id,
+            name: station.attributes.name,
+            lat: station.attributes.latitude,
+            lng: station.attributes.longitude,
+            address: station.attributes.address || "No address found",
+            wheelchair: station.attributes.wheelchair_boarding === 1 ? "Yes" : "No",
+            routeName: response.data.included?.find((r) => r.id === line)?.attributes?.long_name || line,
+            color: lineColors[line] || "gray",
+          };
+        })
         .filter((station) => station.lat !== null && station.lng !== null);
 
       allStations = [...allStations, ...lineStations];
@@ -49,6 +57,12 @@ export const fetchStations = async () => {
       console.error(`Error fetching MBTA data for ${line}:`, error);
     }
   }
+
+  // Update each station's lines attribute with the full set of lines it belongs to
+  allStations = allStations.map((station) => ({
+    ...station,
+    lines: Array.from(stationLineMap.get(station.id) || []),
+  }));
 
   return { stations: allStations, lines: allLines };
 };
